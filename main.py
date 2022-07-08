@@ -218,11 +218,18 @@ class HolidayList:
     def numHolidays(self):
         return len(self._inner_holidays)
     
-    #def filter_holidays_by_week(self, year, week_number):
-        # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
-        # Week number is part of the the Datetime object
-        # Cast filter results as list
+    # filterHolidaysByWeek: get the holidays of a certain week in a certain year
+    #   year: (int) year of the holidays
+    #   week_number: (int) week number (range is 1 to 52, inclusive)
+    #   return: (list(Holiday)) holidays withing that timeframe
+    def filterHolidaysByWeek(self, year, week_number):
+
+        # Get only dates with week number
+        holidays = list(filter(lambda holiday: holiday.date.isocalendar()[1] == week_number
+            and holiday.date.year == year, self._inner_holidays))
+
         # return your holidays
+        return holidays
 
     #def displayHolidaysInWeek(self, holidayList):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
@@ -262,6 +269,10 @@ def main():
     holidays.saveToJSON('data/holidays_temp.json')
     holidays.scrapeHolidays()
     print(holidays.numHolidays())
+    fourth_wk_holidays = holidays.filterHolidaysByWeek(2022, 4)
+    print('Fourth week holidays of 2022:')
+    for holiday in fourth_wk_holidays:
+        print(f'{holiday.name} + ", " + {holiday.date}')
 
     # Large Pseudo Code steps
     # -------------------------------------
@@ -277,20 +288,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# Additional Hints:
-# ---------------------------------------------
-# You may need additional helper functions both in and out of the classes, add functions as you need to.
-#
-# No one function should be more then 50 lines of code, if you need more then 50 lines of code
-# excluding comments, break the function into multiple functions.
-#
-# You can store your raw menu text, and other blocks of texts as raw text files 
-# and use placeholder values with the format option.
-# Example:
-# In the file test.txt is "My name is {fname}, I'm {age}"
-# Then you later can read the file into a string "filetxt"
-# and substitute the placeholders 
-# for example: filetxt.format(fname = "John", age = 36)
-# This will make your code far more readable, by seperating text from code.
