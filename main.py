@@ -60,58 +60,71 @@ class Holiday:
 # Each method has pseudo-code instructions
 # --------------------------------------------
 class HolidayList:
-   def __init__(self):
-       self.innerHolidays = []
-   
-    def addHoliday(holidayObj):
-        # Make sure holidayObj is an Holiday Object by checking the type
-        # Use innerHolidays.append(holidayObj) to add holiday
-        # print to the user that you added a holiday
 
-    def findHoliday(HolidayName, Date):
+    def __init__(self):
+        self._innerHolidays = []
+   
+    # addHoliday: add holiday to holiday list
+    #   holidayObj: Holiday instance of holiday to add
+    def addHoliday(self, holidayObj):
+        
+        # Make sure the input holiday is a holiday object
+        if (type(holidayObj) == Holiday):
+            
+            # Add holiday to holiday list
+            self._innerHolidays.append(holidayObj)
+
+            # Print add message
+            print(f'New holiday ("{holidayObj}") added!\n')
+
+        # If not holiday instance, throw an exception
+        else:
+            raise Exception("Input obejct must be Holiday type!")
+
+    #def findHoliday(HolidayName, Date):
         # Find Holiday in innerHolidays
         # Return Holiday
 
-    def removeHoliday(HolidayName, Date):
+    #def removeHoliday(HolidayName, Date):
         # Find Holiday in innerHolidays by searching the name and date combination.
         # remove the Holiday from innerHolidays
         # inform user you deleted the holiday
 
-    def read_json(filelocation):
+    #def read_json(filelocation):
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
 
-    def save_to_json(filelocation):
+    #def save_to_json(filelocation):
         # Write out json file to selected file.
         
-    def scrapeHolidays():
+    #def scrapeHolidays():
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
         # Remember, 2 previous years, current year, and 2  years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
         # Check to see if name and date of holiday is in innerHolidays array
         # Add non-duplicates to innerHolidays
         # Handle any exceptions.     
 
-    def numHolidays():
+    #def numHolidays():
         # Return the total number of holidays in innerHolidays
     
-    def filter_holidays_by_week(year, week_number):
+    #def filter_holidays_by_week(year, week_number):
         # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
         # Week number is part of the the Datetime object
         # Cast filter results as list
         # return your holidays
 
-    def displayHolidaysInWeek(holidayList):
+    #def displayHolidaysInWeek(holidayList):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
         # Output formated holidays in the week. 
         # * Remember to use the holiday __str__ method.
 
-    def getWeather(weekNum):
+    #def getWeather(weekNum):
         # Convert weekNum to range between two days
         # Use Try / Except to catch problems
         # Query API for weather in that week range
         # Format weather information and return weather string.
 
-    def viewCurrentWeek():
+    #def viewCurrentWeek():
         # Use the Datetime Module to look up current week and year
         # Use your filter_holidays_by_week function to get the list of holidays 
         # for the current week/year
@@ -119,9 +132,15 @@ class HolidayList:
         # Ask user if they want to get the weather
         # If yes, use your getWeather function and display results
 
-
-
 def main():
+
+    holiday = Holiday('My birthday', '1999-09-03')
+    print(type(holiday) == Holiday)
+
+    holidays = HolidayList()
+    holidays.addHoliday(holiday)
+
+
     # Large Pseudo Code steps
     # -------------------------------------
     # 1. Initialize HolidayList Object
