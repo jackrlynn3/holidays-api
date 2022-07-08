@@ -62,69 +62,107 @@ class Holiday:
 class HolidayList:
 
     def __init__(self):
-        self._innerHolidays = []
+        self._inner_holidays = []
    
     # addHoliday: add holiday to holiday list
     #   holidayObj: Holiday instance of holiday to add
-    def addHoliday(self, holidayObj):
+    def addHoliday(self, holiday_obj):
         
         # Make sure the input holiday is a holiday object
-        if (type(holidayObj) == Holiday):
-            
-            # Add holiday to holiday list
-            self._innerHolidays.append(holidayObj)
+        if (type(holiday_obj) == Holiday):
 
-            # Print add message
-            print(f'New holiday ("{holidayObj}") added!\n')
+            # Make sure holiday isn't already in list
+            try:
+                self._inner_holidays.index(holiday_obj)
+                print(f'New holiday ("{holiday_obj.name}", "{holiday_obj.date}") already added!\n')
+            
+            # Go here if not already in list
+            except:
+
+                # Add holiday to holiday list
+                self._inner_holidays.append(holiday_obj)
+
+                # Print add message
+                print(f'New holiday ("{holiday_obj}") added!\n')
 
         # If not holiday instance, throw an exception
         else:
             raise Exception("Input obejct must be Holiday type!")
 
-    #def findHoliday(HolidayName, Date):
-        # Find Holiday in innerHolidays
-        # Return Holiday
+    # findHoliday: search and return specific holiday in list
+    #   holiday_name: (str) name of the holiday
+    #   date_str: (str) string format of date
+    #   date_format: (str) format of the date; default is '%Y-%m-%d'
+    #   return: (Holiday) holiday object if found; None otherwise
+    def findHoliday(self, holiday_name, date_str, date_format='%Y-%m-%d'):
+        
+        # Find holiday that matches name and date
+        date = datetime.strptime(date_str, date_format)
+        for holiday in self._inner_holidays:
+            if (holiday.name == holiday_name and holiday.date == date):
+                return holiday
+        
+        # Return none if no holiday found
+        return None
+    
+    # removeHoliday: search and remove specific holiday in list
+    #   holiday_name: (str) name of the holiday
+    #   date_str: (str) string format of date
+    #   date_format: (str) format of the date; default is '%Y-%m-%d'
+    def removeHoliday(self, holiday_name, date_str, date_format='%Y-%m-%d'):
 
-    #def removeHoliday(HolidayName, Date):
-        # Find Holiday in innerHolidays by searching the name and date combination.
-        # remove the Holiday from innerHolidays
-        # inform user you deleted the holiday
+        # Find index of item
+        j = -1
+        date = datetime.strptime(date_str, date_format)
+        for i in range(len(self._inner_holidays)):
+            holiday = self._inner_holidays[i]
+            if (holiday.name == holiday_name and holiday.date == date):
+                j = i
+        
+        # If never found, return error
+        if (j == -1):
+            print(f'Holiday ("{holiday_name}", "{date_str}") could not be found, so no holiday has been deleted!')
+        
+        # Delete object
+        else:
+            self._inner_holidays.pop(j)
+            print(f'Holiday ("{holiday_name}", "{date_str}") has been deleted!')
 
-    #def read_json(filelocation):
+    #def readJSON(self, f_loc):
         # Read in things from json file location
         # Use addHoliday function to add holidays to inner list.
 
-    #def save_to_json(filelocation):
+    #def saveToJSON(self, f_loc):
         # Write out json file to selected file.
         
-    #def scrapeHolidays():
+    #def scrapeHolidays(self):
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
         # Remember, 2 previous years, current year, and 2  years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
         # Check to see if name and date of holiday is in innerHolidays array
         # Add non-duplicates to innerHolidays
         # Handle any exceptions.     
 
-    #def numHolidays():
+    #def numHolidays(self):
         # Return the total number of holidays in innerHolidays
     
-    #def filter_holidays_by_week(year, week_number):
+    #def filter_holidays_by_week(self, year, week_number):
         # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
         # Week number is part of the the Datetime object
         # Cast filter results as list
         # return your holidays
 
-    #def displayHolidaysInWeek(holidayList):
+    #def displayHolidaysInWeek(self, holidayList):
         # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
         # Output formated holidays in the week. 
         # * Remember to use the holiday __str__ method.
 
-    #def getWeather(weekNum):
+    #def getWeather(self, weekNum):
         # Convert weekNum to range between two days
         # Use Try / Except to catch problems
         # Query API for weather in that week range
         # Format weather information and return weather string.
 
-    #def viewCurrentWeek():
+    #def viewCurrentWeek(self):
         # Use the Datetime Module to look up current week and year
         # Use your filter_holidays_by_week function to get the list of holidays 
         # for the current week/year
@@ -135,10 +173,18 @@ class HolidayList:
 def main():
 
     holiday = Holiday('My birthday', '1999-09-03')
+    christmas = Holiday('Christmas', '2022-12-25')
     print(type(holiday) == Holiday)
 
     holidays = HolidayList()
     holidays.addHoliday(holiday)
+    holidays.addHoliday(holiday)
+    holidays.addHoliday(christmas)
+    print(f'Search holidays, should return Holiday obj: {holidays.findHoliday("My birthday", "1999-09-03")}')
+    print(f'Search holidays, should return None: {holidays.findHoliday("My birthday", "1999-09-04")}')
+    print(f'Search holidays, should return Holiday obj: {holidays.findHoliday("My birthday", "1999-09-03")}')
+    print(f'Delete holidays, should succeed: {holidays.removeHoliday("My birthday", "1999-09-03")}')
+    print(f'Delete holidays, should fail: {holidays.removeHoliday("My birthday", "1999-09-03")}')
 
 
     # Large Pseudo Code steps
@@ -154,7 +200,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main();
+    main()
 
 
 # Additional Hints:
