@@ -231,10 +231,20 @@ class HolidayList:
         # return your holidays
         return holidays
 
-    #def displayHolidaysInWeek(self, holidayList):
-        # Use your filter_holidays_by_week to get list of holidays within a week as a parameter
-        # Output formated holidays in the week. 
-        # * Remember to use the holiday __str__ method.
+
+    def displayHolidaysInWeek(self, holiday_list, should_print=False):
+
+        format_holidays = []
+        for holiday in holiday_list:
+            format_holidays.append(f'{holiday} ({holiday.date.date()})')
+
+        # Give option to print holidays within function 
+        if (should_print):
+            for string in format_holidays:
+                print(string)
+
+        # Return list of formatted holidays
+        return format_holidays
 
     #def getWeather(self, weekNum):
         # Convert weekNum to range between two days
@@ -271,8 +281,7 @@ def main():
     print(holidays.numHolidays())
     fourth_wk_holidays = holidays.filterHolidaysByWeek(2022, 4)
     print('Fourth week holidays of 2022:')
-    for holiday in fourth_wk_holidays:
-        print(f'{holiday.name} + ", " + {holiday.date}')
+    holidays.displayHolidaysInWeek(fourth_wk_holidays, should_print=True)
 
     # Large Pseudo Code steps
     # -------------------------------------
