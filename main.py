@@ -3,6 +3,9 @@ import json
 from bs4 import BeautifulSoup
 import requests
 
+# Make sure to add config.py file
+from config import holidays_api
+
 # Holiday: Class to hold holidays, including name and date
 class Holiday:
 
@@ -70,16 +73,7 @@ class HolidayList:
         
         # Make sure the input holiday is a holiday object
         if (type(holiday_obj) == Holiday):
-
-            # Make sure holiday isn't already in list
-            try:
-                self._inner_holidays.index(holiday_obj)
-                if (verbose):
-                    print(f'New holiday ("{holiday_obj.name}", "{holiday_obj.date}") already added!\n')
             
-            # Go here if not already in list
-            except:
-
                 # Add holiday to holiday list
                 self._inner_holidays.append(holiday_obj)
 
@@ -162,15 +156,65 @@ class HolidayList:
         # Write file
         with open(f_loc, 'w') as f:
             json.dump(holiday_dict, f)
-        
-    #def scrapeHolidays(self):
-        # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
-        # Remember, 2 previous years, current year, and 2  years into the future. You can scrape multiple years by adding year to the timeanddate URL. For example https://www.timeanddate.com/holidays/us/2022
-        # Check to see if name and date of holiday is in innerHolidays array
-        # Add non-duplicates to innerHolidays
-        # Handle any exceptions.     
+    
+    # scrapeHolidays: used to scrape holidays from TimeAndDate holidays API
+    #   verbose: (bool) whether or not to print out message; default False
+    #   NOTE: URL of website should be saved in the config.py file as holiday_api
+    def scrapeHolidays(self, verbose=False):
+
+        # Get 5 year period
+        for year in range(int(datetime.today().year)-2, int(datetime.today().year)+3):
+
+            try:
+
+                # Make connection
+                connection = requests.get(holidays_api + str(year))
+
+                # Pass into beautiful Soup
+                soup = BeautifulSoup(connection.text,'html.parser')
+                table = soup.find('table', attrs={'id':'holidays-table'})
+                table_data = table.find('tbody')
+                
+                # Iterate through each holiday
+                for datum in table_data.find_all_next('tr'):
+                    
+                    # Surround in try-except block to try to get as many data as possible
+                    try:
+
+                        # Get the date
+                        date_str = str(datum.find('th', attrs={'class': 'nw'}))
+                        date = f'{date_str[date_str.index("nw")+4 : date_str.index("</th>")]}, {year}'
+
+                        # Get the holiday
+                        holiday_str = str(datum.find('a'))
+                        holiday = holiday_str[holiday_str.index('>')+1:]
+                        holiday = holiday[:holiday.index('<')]
+
+                        # Add holiday to list
+                        if (self.findHoliday(holiday, date, date_format='%b %d, %Y') == None):
+                            this_holiday = Holiday(holiday, date, date_format='%b %d, %Y')
+                            self._inner_holidays.append(this_holiday)
+
+                            # Print success message
+                            if (verbose):
+                                print(f'"{holiday}" ({date}) has been added!')
+
+                        # Add message if holiday is already in list
+                        else:
+                            if (verbose):
+                                print(f'"{holiday}" ({date}) is already in the list!')
+                    
+                    # Rows that could not be formed into holidays
+                    except:
+                        if (verbose):
+                            print('A holiday could not be added!')  
+            
+            # Throw a connection error if arrises
+            except:
+                print('Connection error! Please check your connection!')
 
     # numHolidays(): get the number of holidays
+    #   return: (str) the count of holidays contained in project
     def numHolidays(self):
         return len(self._inner_holidays)
     
@@ -216,7 +260,8 @@ def main():
     print(f'Delete holidays, should fail: {holidays.removeHoliday("My birthday", "1999-09-03")}')
     holidays.readJSON('data/holidays.json')
     holidays.saveToJSON('data/holidays_temp.json')
-    print(holidays.inner_holidays)
+    holidays.scrapeHolidays()
+    print(holidays.numHolidays())
 
     # Large Pseudo Code steps
     # -------------------------------------
