@@ -1,24 +1,57 @@
-import datetime
+from datetime import datetime
 import json
 from bs4 import BeautifulSoup
 import requests
 from dataclasses import dataclass
 
-
-# -------------------------------------------
-# Modify the holiday class to 
-# 1. Only accept Datetime objects for date.
-# 2. You may need to add additional functions
-# 3. You may drop the init if you are using @dataclasses
-# --------------------------------------------
+# Holiday: Class to hold holidays, including name and date
 class Holiday:
-      
-    def __init__(self,name, date):
-        #Your Code Here        
+
+    # Docstring
+    """
+    Holiday
+    --------
+    + name: str
+    + date: datetime
+    --------
+    __init__(name, date_str, date_format='%Y-%m-%d'): None
+    __str__(): str
+    Getters: name, date
+    Setters: name, date
+    """
     
+    # Initializer: takes in holiday name and date and sets variables
+    def __init__(self, name, date_str, date_format='%Y-%m-%d'):
+        self._name = name
+        self._date = datetime.strptime(date_str, date_format)    
+    
+    # String format: return name of holiday
     def __str__ (self):
-        # String output
-        # Holiday output when printed.
+        return self._name
+    
+    # Getters
+
+    # Name getter
+    @property
+    def name(self):
+        return self._name
+    
+    # Date getter
+    @property
+    def date(self):
+        return self._date
+    
+    # Setters
+
+    # Name setter
+    @name.setter
+    def name(self, new_name):
+        self._name = new_name
+    
+    # Date setter
+    @date.setter
+    def date(self, new_date_str, date_format):
+        self._date = datetime.strptime(new_date_str, date_format)  
           
            
 # -------------------------------------------
