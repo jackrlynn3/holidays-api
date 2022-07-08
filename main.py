@@ -146,8 +146,22 @@ class HolidayList:
                 holiday = Holiday(holiday_json['name'], holiday_json['date'])
                 self.addHoliday(holiday)
 
-    #def saveToJSON(self, f_loc):
-        # Write out json file to selected file.
+    # saveToJSON: save JSON file with holidays
+    #   f_loc: (str) location and name of file to save
+    #   date_format: (str) format of the date; default is '%Y-%m-%d'
+    def saveToJSON(self, f_loc, date_format='%Y-%m-%d'):
+
+        # Convert data into dictionary format
+        holiday_dict = []
+        for holiday in self._inner_holidays:
+            this_holiday = dict()
+            this_holiday['name'] = holiday.name
+            this_holiday['date'] = holiday.date.strftime(date_format)
+            holiday_dict.append(this_holiday)
+
+        # Write file
+        with open(f_loc, 'w') as f:
+            json.dump(holiday_dict, f)
         
     #def scrapeHolidays(self):
         # Scrape Holidays from https://www.timeanddate.com/holidays/us/ 
@@ -156,8 +170,9 @@ class HolidayList:
         # Add non-duplicates to innerHolidays
         # Handle any exceptions.     
 
-    #def numHolidays(self):
-        # Return the total number of holidays in innerHolidays
+    # numHolidays(): get the number of holidays
+    def numHolidays(self):
+        return len(self._inner_holidays)
     
     #def filter_holidays_by_week(self, year, week_number):
         # Use a Lambda function to filter by week number and save this as holidays, use the filter on innerHolidays
@@ -200,6 +215,7 @@ def main():
     print(f'Delete holidays, should succeed: {holidays.removeHoliday("My birthday", "1999-09-03")}')
     print(f'Delete holidays, should fail: {holidays.removeHoliday("My birthday", "1999-09-03")}')
     holidays.readJSON('data/holidays.json')
+    holidays.saveToJSON('data/holidays_temp.json')
     print(holidays.inner_holidays)
 
     # Large Pseudo Code steps
