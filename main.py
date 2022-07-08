@@ -2,7 +2,6 @@ from datetime import datetime
 import json
 from bs4 import BeautifulSoup
 import requests
-from dataclasses import dataclass
 
 # Holiday: Class to hold holidays, including name and date
 class Holiday:
@@ -54,19 +53,20 @@ class Holiday:
         self._date = datetime.strptime(new_date_str, date_format)  
           
            
-# -------------------------------------------
-# The HolidayList class acts as a wrapper and container
-# For the list of holidays
-# Each method has pseudo-code instructions
-# --------------------------------------------
 class HolidayList:
 
     def __init__(self):
         self._inner_holidays = []
+
+    # inner_holidays getter
+    @property
+    def inner_holidays(self):
+        return self._inner_holidays
    
     # addHoliday: add holiday to holiday list
-    #   holidayObj: Holiday instance of holiday to add
-    def addHoliday(self, holiday_obj):
+    #   holidayObj: (Holiday) instance of holiday to add
+    #   verbose: (bool) whether or not to print out message; default False
+    def addHoliday(self, holiday_obj, verbose=False):
         
         # Make sure the input holiday is a holiday object
         if (type(holiday_obj) == Holiday):
@@ -74,7 +74,8 @@ class HolidayList:
             # Make sure holiday isn't already in list
             try:
                 self._inner_holidays.index(holiday_obj)
-                print(f'New holiday ("{holiday_obj.name}", "{holiday_obj.date}") already added!\n')
+                if (verbose):
+                    print(f'New holiday ("{holiday_obj.name}", "{holiday_obj.date}") already added!\n')
             
             # Go here if not already in list
             except:
@@ -83,7 +84,8 @@ class HolidayList:
                 self._inner_holidays.append(holiday_obj)
 
                 # Print add message
-                print(f'New holiday ("{holiday_obj}") added!\n')
+                if (verbose):
+                    print(f'New holiday ("{holiday_obj}") added!\n')
 
         # If not holiday instance, throw an exception
         else:
@@ -109,7 +111,8 @@ class HolidayList:
     #   holiday_name: (str) name of the holiday
     #   date_str: (str) string format of date
     #   date_format: (str) format of the date; default is '%Y-%m-%d'
-    def removeHoliday(self, holiday_name, date_str, date_format='%Y-%m-%d'):
+    #   verbose: (bool) whether or not to print out message; default False
+    def removeHoliday(self, holiday_name, date_str, date_format='%Y-%m-%d', verbose=False):
 
         # Find index of item
         j = -1
@@ -121,16 +124,27 @@ class HolidayList:
         
         # If never found, return error
         if (j == -1):
-            print(f'Holiday ("{holiday_name}", "{date_str}") could not be found, so no holiday has been deleted!')
+            if (verbose):
+                print(f'Holiday ("{holiday_name}", "{date_str}") could not be found, so no holiday has been deleted!')
         
         # Delete object
         else:
             self._inner_holidays.pop(j)
-            print(f'Holiday ("{holiday_name}", "{date_str}") has been deleted!')
+            if (verbose):
+                print(f'Holiday ("{holiday_name}", "{date_str}") has been deleted!')
 
-    #def readJSON(self, f_loc):
-        # Read in things from json file location
-        # Use addHoliday function to add holidays to inner list.
+    # readJSON: read in holiday data as JSON format and save to _inner_holidays
+    #   f_loc: (str) location of JSON file
+    def readJSON(self, f_loc):
+
+        # Read in data from json file location
+        with open(f_loc, 'r') as f:
+            data = json.load(f)['holidays']
+
+            # Iterate through each JSON obj and create a new holiday
+            for holiday_json in data:
+                holiday = Holiday(holiday_json['name'], holiday_json['date'])
+                self.addHoliday(holiday)
 
     #def saveToJSON(self, f_loc):
         # Write out json file to selected file.
@@ -185,7 +199,8 @@ def main():
     print(f'Search holidays, should return Holiday obj: {holidays.findHoliday("My birthday", "1999-09-03")}')
     print(f'Delete holidays, should succeed: {holidays.removeHoliday("My birthday", "1999-09-03")}')
     print(f'Delete holidays, should fail: {holidays.removeHoliday("My birthday", "1999-09-03")}')
-
+    holidays.readJSON('data/holidays.json')
+    print(holidays.inner_holidays)
 
     # Large Pseudo Code steps
     # -------------------------------------
