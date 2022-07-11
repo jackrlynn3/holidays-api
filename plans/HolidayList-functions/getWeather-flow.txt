@@ -1,0 +1,24 @@
+[.circle] getWeather() is called
+  Get the current day of the week using datetime
+    Intialize dictionary variable that converts date into weather
+      Determine how many days of forecast are needed
+        Get all future forecasts in this week, i.e., all weather predictions, by querying OpenWeathers prediction API
+          Convert the weather predictions to JSON format
+            Convert the predictions to a list format
+              [iteration] Starting from the day after today, iterate forwards until Sunday
+                Extract the weather data for that day
+                  Save the weather data to the dictionary
+                    [.diamond] Is this day Sunday?
+                      No: (iteration)
+                      Yes: End prediction iteration
+                        Determine how many days of already past weather need to be gathered
+                          [iteration2] Iterate through these forcasts backwards from today
+                            Query the OpenWeather historical API for the current day
+                              Convert the data to JSON format
+                                Extract the weather data
+                                  Save the weather data to the dictionary
+                                    [.diamond] Is this the last day needed?
+                                      Yes: (return)
+                                      No: [.diamond] Does the next day needed exceed OpenWeather's 5 day limit
+                                        Yes:[return] [.circle] Return weather dictionary
+                                        No: (iteration2)
