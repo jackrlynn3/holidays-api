@@ -7,6 +7,7 @@ import requests
 # Make sure to add config.py file
 from config import holidays_api
 from config import weather_api_future
+from config import weather_api_past
 from config import weather_headers
 
 # int_input: used for integer inputs (PULLED FROM TOURNAMENT TRACKER ASSIGNMENT)
@@ -320,7 +321,7 @@ class HolidayList:
             dow_conversion = {6: 0, 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6}
             i_future = dow_conversion[curr_dow]
 
-            # Create weather dictionary and list
+            # Create weather dictionary and date list
             dates = []
             weather = {}
             j = 0
@@ -332,12 +333,14 @@ class HolidayList:
                 add_date = add_date + dt.timedelta(days=1)
                 j += 1
 
+            # Future weather forcast
+
             # First determine how many forcast days are needed
             future_n = 6 - i_future
 
             # Query those days to get forcast weather
             query_str_future = {"q":"minneapolis,us","cnt":f'{future_n}',"units":"imperial"}
-            response_future = response = requests.request("GET", weather_api_future, headers=weather_headers, params=query_str_future)
+            response_future = requests.request("GET", weather_api_future, headers=weather_headers, params=query_str_future)
             data_future = json.loads(response_future.text)
             future_weather = data_future['list']
 
@@ -345,8 +348,25 @@ class HolidayList:
             for i in range(i_future+1, 7):
                 current_day = future_weather[i-i_future-1]
                 weather[dates[i]] = current_day['weather'][0]['main']
+            
+            # Past weather historical data
+            j = 0
+            for i in range(i_future, -1, -1):
 
-            print(weather)
+                # Makes sure never to query beyond 5 days in past (no data after that)
+                if (j < 5):
+
+                    # Get the change in date and query that date
+                    date = datetime.today() - dt.timedelta(j)
+                    query_str_past = {"lat":"44.986656","lon":"-93.2650","dt":f'{int(date.timestamp())}'}
+                    response_past = requests.request("GET", weather_api_past, headers=weather_headers, params=query_str_past)
+
+                    # Save that dates weather
+                    data_past = json.loads(response_past.text)
+                    curr_weather = data_past['current']['weather'][0]['main']
+                    weather[dates[i]] = curr_weather
+
+                j += 1
 
             # Return weather
             return weather
@@ -397,7 +417,7 @@ def main():
         print()
 
         # Get user choice
-        choice = int_input(minimum=1, maximum=5)
+        choice = int_input(minimum=1, maximum=5, input_string="Selection: ")
         print()
 
         # Add a holiday option
@@ -632,10 +652,6 @@ def main():
     # Sign off message
     print()
     print('Thanks for using Holidays API! Auf Wiedersehen!\n')
-
-def main2():
-    holidays = HolidayList()
-    print(holidays.getWeather(2022, 26))
 
 if __name__ == "__main__":
     main()
