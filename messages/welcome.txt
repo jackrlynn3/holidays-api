@@ -1,0 +1,3 @@
+Holiday Management
+===================
+There are {num} holidays stored in the system.

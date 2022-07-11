@@ -5,6 +5,53 @@ import requests
 
 # Make sure to add config.py file
 from config import holidays_api
+from config import weather_api
+from config import weather_headers
+
+# int_input: used for integer inputs (PULLED FROM TOURNAMENT TRACKER ASSIGNMENT)
+#   minimum: (int, def -1) the minimum of acceptable range, inclusive; leave -1 no lower bound
+#   maximum: (int, def -1) the maximum of acceptable range, inclusive; leave -1 no upper bound
+#   input_string: (str, def "  Selection: ") the input prompt message
+#   return: (int) integer input
+def int_input(minimum=-1, maximum=-1, input_string="  Selection: "):
+
+    # Initialize helper variables
+    input_1_valid = False
+    input_1 = 0
+
+    # Keep going until valid input is reached
+    while (not input_1_valid):
+        try:
+            input_1 = int(input(input_string)) # Get integer input
+
+            # Case 1: unbounded
+            if (minimum == -1 & maximum == -1):
+                input_1_valid = True
+            
+            # Case 2: max bounded
+            elif (minimum == -1): # Error: out of bounds
+                if (input_1 > maximum):
+                    print(f'\nPlease enter an integer less than or equal to {maximum}.\n')
+                else:
+                    input_1_valid = True
+
+            # Case 3: min bounded
+            elif (maximum == -1):
+                if (input_1 < minimum): # Error: out of bounds
+                    print(f'\nPlease enter an integer greater than or equal to {minimum}.\n')
+                else:
+                    input_1_valid = True
+
+            # Case 4: max and min bounded
+            else: # Error: out of bounds
+                if (input_1 < minimum or input_1 > maximum):
+                    print(f'\nPlease enter an integer between {minimum} and {maximum}, inclusive.\n')
+                else:
+                    input_1_valid = True
+        
+        except: # Error: Not an integer
+            print('\nPlease enter an integer!\n')
+    return input_1
 
 # Holiday: Class to hold holidays, including name and date
 class Holiday:
@@ -54,7 +101,6 @@ class Holiday:
     @date.setter
     def date(self, new_date_str, date_format):
         self._date = datetime.strptime(new_date_str, date_format)  
-          
            
 class HolidayList:
 
@@ -231,8 +277,11 @@ class HolidayList:
         # return your holidays
         return holidays
 
-
-    def displayHolidaysInWeek(self, holiday_list, should_print=False):
+    # displayHolidaysInWeek: display a list of holidays with proper formatting
+    #   holiday_list: (list(Holiday)) list of holidays
+    #   should_print: (bool, default: False) True to include prints of each; False otherwise
+    #   return: (list(str)) list of properly formatted holidays
+    def displayHolidays(self, holiday_list, should_print=False):
 
         format_holidays = []
         for holiday in holiday_list:
@@ -246,49 +295,115 @@ class HolidayList:
         # Return list of formatted holidays
         return format_holidays
 
-    #def getWeather(self, weekNum):
-        # Convert weekNum to range between two days
-        # Use Try / Except to catch problems
-        # Query API for weather in that week range
-        # Format weather information and return weather string.
+    def getWeather(self, year, week_num):
 
-    #def viewCurrentWeek(self):
+        # May run into querying limits
+        try:
+
+            # Convert dates to timestamps
+            days = []
+            for i in [1, 2, 3, 4, 5, 6, 0]:
+                days.append(int(datetime.strptime(f'{year}-{week_num} {i} 12:00', "%Y-%W %w %H:%M").timestamp()))
+
+            # Get weather data
+            print("New load")
+            print(days)
+            weather = []
+            for t in days:
+                query_string = {"lat":"44.9778","lon":"93.2650","dt":f'{t} '}
+                response = requests.request("GET", weather_api, headers=weather_headers, params=query_string)
+                data = json.loads(response.text)
+                print(data)
+                print()
+                weather.append(data['weather'][0]['description'])
+
+            return weather
+        
+        except:
+            print('Ran out of queries to Weather API!')
+
+    # viewCurrentWeek: view current week of holidays and weather
+    def viewCurrentWeek(self):
+
         # Use the Datetime Module to look up current week and year
-        # Use your filter_holidays_by_week function to get the list of holidays 
-        # for the current week/year
+        year = datetime.now().year
+        week = datetime.now().isocalendar()[1]
+
+        # Use your filterHolidaysByWeek function to get the list of holidays 
+        holidays = self.filterHolidaysByWeek(year, week)
+
         # Use your displayHolidaysInWeek function to display the holidays in the week
+        self.displayHolidays(holidays, should_print=True)
+
         # Ask user if they want to get the weather
         # If yes, use your getWeather function and display results
 
 def main():
 
-    holiday = Holiday('My birthday', '1999-09-03')
-    christmas = Holiday('Christmas', '2022-12-25')
-    print(type(holiday) == Holiday)
-
+    # Set up variables
     holidays = HolidayList()
-    holidays.addHoliday(holiday)
-    holidays.addHoliday(holiday)
-    holidays.addHoliday(christmas)
-    print(f'Search holidays, should return Holiday obj: {holidays.findHoliday("My birthday", "1999-09-03")}')
-    print(f'Search holidays, should return None: {holidays.findHoliday("My birthday", "1999-09-04")}')
-    print(f'Search holidays, should return Holiday obj: {holidays.findHoliday("My birthday", "1999-09-03")}')
-    print(f'Delete holidays, should succeed: {holidays.removeHoliday("My birthday", "1999-09-03")}')
-    print(f'Delete holidays, should fail: {holidays.removeHoliday("My birthday", "1999-09-03")}')
-    holidays.readJSON('data/holidays.json')
-    holidays.saveToJSON('data/holidays_temp.json')
-    holidays.scrapeHolidays()
-    print(holidays.numHolidays())
-    fourth_wk_holidays = holidays.filterHolidaysByWeek(2022, 4)
-    print('Fourth week holidays of 2022:')
-    holidays.displayHolidaysInWeek(fourth_wk_holidays, should_print=True)
 
-    # Large Pseudo Code steps
-    # -------------------------------------
-    # 1. Initialize HolidayList Object
-    # 2. Load JSON file via HolidayList read_json function
-    # 3. Scrape additional holidays using your HolidayList scrapeHolidays function.
-    # 3. Create while loop for user to keep adding or working with the Calender
+    # Load in variables, both from JSON and API
+    holidays.readJSON('data/holidays.json')
+    holidays.scrapeHolidays()
+
+    # Print welcome message
+    f = open('messages/welcome.txt', 'r')
+    welcome = f.read()
+    print()
+    print(welcome.format(num=str(holidays.numHolidays())))
+    print()
+
+    # Create while loop to keep user going
+    keep_going = True
+    saved = False
+    while (keep_going):
+
+        # Display user menu
+        f = open('messages/options.txt', 'r')
+        options = f.read()
+        print(options)
+        print()
+
+        # Get user choice
+        choice = int_input(minimum=1, maximum=5)
+        print()
+
+        #if (choice == 1):
+        #if (choice == 2):
+        #if (choice == 3):
+        #if (choice == 4):
+        
+        # Exit option
+        if (choice == 5):
+
+            # Display options
+            print("Exit")
+            print("=====")
+            print("Are you sure you want to exit?")
+            if (not saved):
+                print("Your changes will be lost!")
+
+            # Get resposne
+            good_input = False
+            while (not good_input):
+                choice = input('[y/n] ')
+                if (choice.lower().strip() == 'y'): # Leave system
+                    keep_going = False
+                    good_input = True
+                elif (choice.lower().strip() == 'n'): # Leave menu
+                    print('Returning to main menu!\n')
+                    good_input = True
+                else: # Bad input
+                    print("Please enter 'y' or 'n'!")
+        
+    print()
+    print('Thanks for using Holidays API! Auf Wiedersehen!\n')
+
+
+
+
+
     # 4. Display User Menu (Print the menu)
     # 5. Take user input for their action based on Menu and check the user input for errors
     # 6. Run appropriate method from the HolidayList object depending on what the user input is
