@@ -291,7 +291,7 @@ class HolidayList:
 
         # Add in weather upon request
         if (if_weather):
-            weather = self.getWeather(datetime.today().year, datetime.today().isocalendar()[1])
+            weather = self.getWeather()
 
         # Format strings
         for holiday in holiday_list:
@@ -309,7 +309,8 @@ class HolidayList:
         # Return list of formatted holidays
         return format_holidays
 
-    def getWeather(self, year, week_num):
+    # getWeather: create dictionary of days of week and corresponding weathers; because of limitations of API, can only be used on current week
+    def getWeather(self):
 
         # May run into querying limits
         try:
