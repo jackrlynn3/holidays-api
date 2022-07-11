@@ -317,15 +317,11 @@ class HolidayList:
             # Get what day of the week it is
             curr_dow = datetime.today().weekday()
 
-            # Convert that day into a usable index
-            dow_conversion = {6: 0, 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6}
-            i_future = dow_conversion[curr_dow]
-
             # Create weather dictionary and date list
             dates = []
             weather = {}
             j = 0
-            add_date = datetime.today() - dt.timedelta(days=i_future)
+            add_date = datetime.today() - dt.timedelta(days=curr_dow)
             while (j < 7):
                 date = add_date.strftime('%Y-%m-%d')
                 dates.append(date)
@@ -336,7 +332,7 @@ class HolidayList:
             # Future weather forcast
 
             # First determine how many forcast days are needed
-            future_n = 6 - i_future
+            future_n = 6 - curr_dow
 
             # Query those days to get forcast weather
             query_str_future = {"q":"minneapolis,us","cnt":f'{future_n}',"units":"imperial"}
@@ -345,13 +341,13 @@ class HolidayList:
             future_weather = data_future['list']
 
             # Add that weather to list
-            for i in range(i_future+1, 7):
-                current_day = future_weather[i-i_future-1]
+            for i in range(curr_dow+1, 7):
+                current_day = future_weather[i-curr_dow-1]
                 weather[dates[i]] = current_day['weather'][0]['main']
             
             # Past weather historical data
             j = 0
-            for i in range(i_future, -1, -1):
+            for i in range(curr_dow, -1, -1):
 
                 # Makes sure never to query beyond 5 days in past (no data after that)
                 if (j < 5):
