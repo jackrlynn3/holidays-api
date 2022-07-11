@@ -1,0 +1,17 @@
+[.circle] saveToJSON() is called
+  Get the 5-year range using datetime to get current year and the four years around it
+    [iteration] Iterate to the next year
+      Make connection to Date and Time API to get holidays for the iteration year
+        Pass connection HTML into Beautiful Soup
+          Extract the table from Beautiful soup
+            Get only the body of the table
+              [iteration2] Iterate to the next row of the table
+                Extract the holiday name from the row
+                  Extract the date from the row
+                    Convert the name and date into a Holiday instance
+                      Save to HolidayList using addHoliday()
+                        [.diamond] Is this the last row of this collection?
+                          No: (iteration2)
+                          Yes: [.diamond] Is this the last year to query?
+                            No: (iteration)
+                            Yes: [.circle] End program and return nothing

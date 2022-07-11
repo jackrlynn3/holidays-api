@@ -1,0 +1,8 @@
+[.circle] saveToJSON() is called with file location string
+  [iterations] Iterate through each Holiday in HolidayList
+    Convert Holiday into dictionary instance
+      Add dictionary instance to list
+        [.diamond] Is this the last iteration?
+          Yes: Open JSON file to write using input file location
+            [.circle] Convert list of Holiday instances in dictionary format into JSON and save using json.dump
+          No: (iterations)
