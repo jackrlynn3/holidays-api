@@ -1,0 +1,9 @@
+[.circle] readJSON() is called with file location string
+  Open file described by file location string
+    Convert file contents to JSON format
+      [iterations] Iterate through each JSON chunk in list
+        Create a Holiday instance using JSON chunk contents
+          Add Holiday instance to HolidayList using addHoliday()
+            [.diamond] Is this the last iteration?
+              Yes: [.circle] Return nothing
+              No: (iterations)

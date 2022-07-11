@@ -1,0 +1,10 @@
+[.circle] removeHoliday() is called with holiday name and date string
+  Convert date string to datetime object
+    [iterate] Iterate through all Holiday objects in inner_holidays using indices
+      [.diamond] Is this the holiday?
+        Yes: Save the index
+          End iteration
+            [.circle] Pop the the holiday out of inner_holidays using index
+        No: [.diamond] Is this the last iteration?
+          Yes: [.circle] Show message that the holiday could not be found
+          No: (iterate)

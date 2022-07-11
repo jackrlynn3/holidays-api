@@ -1,0 +1,8 @@
+[.circle] findHoliday() is called with holiday name and date string
+  Convert date string to datetime object
+    [iterate] Iterate through all Holiday objects in inner_holidays
+      [.diamond] Is this the holiday?
+        Yes: [.circle] Return Holiday object
+        No: [.diamond] Is this the last iteration?
+          Yes: [.circle] Return None
+          No: (iterate)

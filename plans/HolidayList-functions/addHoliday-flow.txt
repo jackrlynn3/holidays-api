@@ -1,0 +1,6 @@
+[.circle] addHoliday() is called with a object
+  [.diamond] Is the object a Holiday object?
+    Yes: Append Holiday object to HolidayList's inner_holidays
+      [.circle] [no-return] Function ends with no return
+    No: Raise exception
+      (no-return)
