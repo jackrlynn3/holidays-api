@@ -371,12 +371,67 @@ def main():
 
         #if (choice == 1):
         #if (choice == 2):
-        #if (choice == 3):
+
+        # Save holidays option
+        if (choice == 3):
+            
+            # Display page info
+            print("Saving Holiday List")
+            print("====================")
+            print("Are you sure you want to save your changes?")
+
+            # Get response
+            good_input = False
+            while (not good_input):
+                choice = input('[y/n] ')
+
+                # Save data
+                if (choice.lower().strip() == 'y'): # Save data
+
+                    # Get file name
+                    good_input_2 = False
+                    name = ""
+                    while (not good_input_2):
+                        name = input("Please input a file name, excluding JSON tag: ")
+                        if (name == ""):
+                            print("Please enter a name that isn't blank!")
+                        elif (".json" in name):
+                            print("Please do not include '.json' in input!")
+                        else:
+                            good_input_2 = True
+                    
+                    # Save file
+                    holidays.saveToJSON(f'{name}.json')
+                    saved = True
+                    
+                    # Print success message
+                    print("Success:")
+                    print(f'Your changes have been saved to {name}.json')
+
+                    # Return to main menu
+                    print('Returning to main menu!\n')
+                    good_input = True
+
+                # Don't do any thing
+                elif (choice.lower().strip() == 'n'):
+                    
+                    # Print message
+                    print()
+                    print("Canceled:")
+                    print("Holiday list file save canceled.\n")
+
+                    # Return to main menu
+                    print('Returning to main menu!\n')
+                    good_input = True
+                
+                # Bad input
+                else:
+                    print("Please enter 'y' or 'n'!")
 
         # View holidays option
         if (choice == 4):
 
-            # Display options
+            # Display page info
             print("View Holidays")
             print("=================")
             
@@ -410,7 +465,7 @@ def main():
             if (not saved): # Only display if changes have been made that haven't been saved
                 print("Your changes will be lost!")
 
-            # Get resposne
+            # Get response
             good_input = False
             while (not good_input):
                 choice = input('[y/n] ')
