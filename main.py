@@ -1,11 +1,12 @@
 from datetime import datetime
+import datetime as dt
 import json
 from bs4 import BeautifulSoup
 import requests
 
 # Make sure to add config.py file
 from config import holidays_api
-from config import weather_api
+from config import weather_api_future
 from config import weather_headers
 
 # int_input: used for integer inputs (PULLED FROM TOURNAMENT TRACKER ASSIGNMENT)
@@ -285,16 +286,19 @@ class HolidayList:
     def displayHolidays(self, holiday_list, should_print=False, if_weather=False):
 
         format_holidays = []
-        for holiday in holiday_list:
-            format_holidays.append(f'{holiday} ({holiday.date.date()})')
+        weather = []
 
         # Add in weather upon request
         if (if_weather):
-            print("Add weather stuff here!")
             weather = self.getWeather(datetime.today().year, datetime.today().isocalendar()[1])
-            if (weather != None and len(weather) == 7):
-                for i in range(len(format_holidays)):
-                    format_holidays[i] = f'{format_holidays[i]} - {weather[i]}'
+
+        # Format strings
+        for holiday in holiday_list:
+            date = str(holiday.date.date())
+            if (if_weather):
+                format_holidays.append(f'{holiday} ({date}) - {weather[date]}')
+            else:
+                format_holidays.append(f'{holiday} ({holiday.date.date()})')
 
         # Give option to print holidays within function 
         if (should_print):
@@ -309,23 +313,42 @@ class HolidayList:
         # May run into querying limits
         try:
 
-            # Convert dates to timestamps
-            days = []
-            for i in [1, 2, 3, 4, 5, 6, 0]:
-                days.append(int(datetime.strptime(f'{year}-{week_num} {i} 12:00', "%Y-%W %w %H:%M").timestamp()))
+            # Get what day of the week it is
+            curr_dow = datetime.today().weekday()
 
-            # Get weather data
-            print("New load")
-            print(days)
-            weather = []
-            for t in days:
-                query_string = {"lat":"44.9778","lon":"93.2650","dt":f'{t} '}
-                response = requests.request("GET", weather_api, headers=weather_headers, params=query_string)
-                data = json.loads(response.text)
-                print(data)
-                print()
-                weather.append(data['weather'][0]['description'])
+            # Convert that day into a usable index
+            dow_conversion = {6: 0, 0: 1, 1: 2, 2: 3, 3: 4, 4: 5, 5: 6}
+            i_future = dow_conversion[curr_dow]
 
+            # Create weather dictionary and list
+            dates = []
+            weather = {}
+            j = 0
+            add_date = datetime.today() - dt.timedelta(days=i_future)
+            while (j < 7):
+                date = add_date.strftime('%Y-%m-%d')
+                dates.append(date)
+                weather[date] = 'n/a'
+                add_date = add_date + dt.timedelta(days=1)
+                j += 1
+
+            # First determine how many forcast days are needed
+            future_n = 6 - i_future
+
+            # Query those days to get forcast weather
+            query_str_future = {"q":"minneapolis,us","cnt":f'{future_n}',"units":"imperial"}
+            response_future = response = requests.request("GET", weather_api_future, headers=weather_headers, params=query_str_future)
+            data_future = json.loads(response_future.text)
+            future_weather = data_future['list']
+
+            # Add that weather to list
+            for i in range(i_future+1, 7):
+                current_day = future_weather[i-i_future-1]
+                weather[dates[i]] = current_day['weather'][0]['main']
+
+            print(weather)
+
+            # Return weather
             return weather
         
         except:
@@ -345,6 +368,7 @@ class HolidayList:
         # Use your displayHolidaysInWeek function to display the holidays in the week
         self.displayHolidays(holidays, should_print=True, if_weather=weather)
 
+# main: main function runner
 def main():
 
     # Set up variables
@@ -608,6 +632,10 @@ def main():
     # Sign off message
     print()
     print('Thanks for using Holidays API! Auf Wiedersehen!\n')
+
+def main2():
+    holidays = HolidayList()
+    print(holidays.getWeather(2022, 26))
 
 if __name__ == "__main__":
     main()
