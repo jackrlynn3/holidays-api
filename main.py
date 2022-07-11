@@ -31,26 +31,26 @@ def int_input(minimum=-1, maximum=-1, input_string="  Selection: "):
             # Case 2: max bounded
             elif (minimum == -1): # Error: out of bounds
                 if (input_1 > maximum):
-                    print(f'\nPlease enter an integer less than or equal to {maximum}.\n')
+                    print(f'\nPlease enter an integer less than or equal to {maximum}.')
                 else:
                     input_1_valid = True
 
             # Case 3: min bounded
             elif (maximum == -1):
                 if (input_1 < minimum): # Error: out of bounds
-                    print(f'\nPlease enter an integer greater than or equal to {minimum}.\n')
+                    print(f'\nPlease enter an integer greater than or equal to {minimum}.')
                 else:
                     input_1_valid = True
 
             # Case 4: max and min bounded
             else: # Error: out of bounds
                 if (input_1 < minimum or input_1 > maximum):
-                    print(f'\nPlease enter an integer between {minimum} and {maximum}, inclusive.\n')
+                    print(f'\nPlease enter an integer between {minimum} and {maximum}, inclusive.')
                 else:
                     input_1_valid = True
         
         except: # Error: Not an integer
-            print('\nPlease enter an integer!\n')
+            print('\nPlease enter an integer!')
     return input_1
 
 # Holiday: Class to hold holidays, including name and date
@@ -356,7 +356,7 @@ def main():
 
     # Create while loop to keep user going
     keep_going = True
-    saved = False
+    saved = True
     while (keep_going):
 
         # Display user menu
@@ -372,7 +372,33 @@ def main():
         #if (choice == 1):
         #if (choice == 2):
         #if (choice == 3):
-        #if (choice == 4):
+
+        # View holidays option
+        if (choice == 4):
+
+            # Display options
+            print("View Holidays")
+            print("=================")
+            
+            # Get year range
+            year_min = None
+            year_max = None
+            for holiday in holidays.inner_holidays:
+                if (year_min == None or year_min > holiday.date.year):
+                    year_min = holiday.date.year
+                if (year_max == None or year_max < holiday.date.year):
+                    year_max = holiday.date.year
+            
+            # Get year and month
+            which_year = int_input(minimum=year_min, maximum=year_max, input_string="Which year?: ")
+            which_week = int_input(minimum=1, maximum=52,
+                input_string=f'Which week (current week: {datetime.today().isocalendar()[1]})? [1-52]: ')
+            
+            # Display results
+            print()
+            print(f'These are the holidays for {which_year} week #{which_week}:')
+            holidays.displayHolidays(holidays.filterHolidaysByWeek(which_year, which_week), should_print=True)
+            print()
         
         # Exit option
         if (choice == 5):
@@ -381,7 +407,7 @@ def main():
             print("Exit")
             print("=====")
             print("Are you sure you want to exit?")
-            if (not saved):
+            if (not saved): # Only display if changes have been made that haven't been saved
                 print("Your changes will be lost!")
 
             # Get resposne
@@ -396,19 +422,10 @@ def main():
                     good_input = True
                 else: # Bad input
                     print("Please enter 'y' or 'n'!")
-        
+    
+    # Sign off message
     print()
     print('Thanks for using Holidays API! Auf Wiedersehen!\n')
-
-
-
-
-
-    # 4. Display User Menu (Print the menu)
-    # 5. Take user input for their action based on Menu and check the user input for errors
-    # 6. Run appropriate method from the HolidayList object depending on what the user input is
-    # 7. Ask the User if they would like to Continue, if not, end the while loop, ending the program.  If they do wish to continue, keep the program going. 
-
 
 if __name__ == "__main__":
     main()
