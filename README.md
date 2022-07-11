@@ -2,7 +2,7 @@
 
 Holidays are **import** because they symbolize **what a culture or region values**. However, remembering when holidays happen is tricky, so the **Holidays API UI** takes in hundreds of **US and international holidays** from the [Time and Date API](https://www.timeanddate.com/holidays/us/) and allows the user to view their holiday lists. Furthermore, users can **add** and **delete** holidays to their wishes and then **save** their holiday lists to a **JSON file** to then use later on. This UI functions entirely on command-line-enabled Python.
 
-*Project structured is described under the Plans directory*
+*Project structure is described under the Plans directory*
 
 *Creator: Jack Lynn (Dev10 Data Associate)*
 
