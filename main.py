@@ -420,7 +420,55 @@ def main():
             # Return to main menu
             print('Returning to main menu!\n')
 
-        #if (choice == 2):
+        # Remove a holiday option
+        if (choice == 2):
+            # Display page info
+            print("Remove a Holiday")
+            print("=============")
+
+            # Get holiday name
+            good_input = False
+            name = ""
+            while (not good_input):
+                name = input("Holiday: ")
+                if (name == ""):
+                    print("Please enter a name that isn't blank!")
+                else:
+                    good_input = True
+            
+            # Get date
+            good_input = False
+            date = ""
+            while (not good_input):
+                date = input("Date [YYYY-MM-DD]: ")
+
+                # Immediately reject blank entries
+                if (date == ""):
+                    print("Please enter a name that isn't blank!")
+                
+                # Try to convert date to datetime to see if properly formatted
+                try:
+                    datetime.strptime(date, '%Y-%m-%d')
+                    good_input = True
+                except:
+                    print("Date is not formatted correctly; please use YYYY-MM-DD!")
+
+            # Check to see if holiday already exists
+            exists = holidays.findHoliday(name, date)
+            if (exists != None):
+
+                # Remove holiday if there
+                holidays.removeHoliday(name, date)
+                print(f'\n{name} ({date}) is now removed!\n')
+                saved = False
+
+            # Don't add holiday if already in list
+            else:
+                print(f'\n{name} ({date}) is not in system, so it cannot be removed!\n')
+
+            # Return to main menu
+            print('Returning to main menu!\n')
+
 
         # Save holidays option
         if (choice == 3):
@@ -455,10 +503,12 @@ def main():
                     saved = True
                     
                     # Print success message
+                    print()
                     print("Success:")
                     print(f'Your changes have been saved to {name}.json')
 
                     # Return to main menu
+                    print()
                     print('Returning to main menu!\n')
                     good_input = True
 
@@ -471,6 +521,7 @@ def main():
                     print("Holiday list file save canceled.\n")
 
                     # Return to main menu
+                    print()
                     print('Returning to main menu!\n')
                     good_input = True
                 
