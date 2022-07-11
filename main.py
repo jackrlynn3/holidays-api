@@ -650,5 +650,6 @@ def main():
     print()
     print('Thanks for using Holidays API! Auf Wiedersehen!\n')
 
+# Call main function
 if __name__ == "__main__":
     main()
