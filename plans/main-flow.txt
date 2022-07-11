@@ -1,0 +1,59 @@
+~~~
+layout:
+  name: dagre
+~~~
+[.circle] User initiates the program using main.py
+  HolidayList variable is instatiated
+    JSON file holidays.json is read into the HolidayList variable using readJSON()
+      Time and Date API is accessed for its holidays for dates from 2 years ago to 2 year in the future using ScrapeHolidays()
+        Welcome message is displayed
+          [.diamond] [what-next] What does the user want to do next?
+            1: Add a holiday
+              [get-add-name] Get name of holiday from user
+                Get date of holiday from user
+                  [.diamond] Are both the name and date valid?
+                    No: (get-add-name)
+                    Yes: [.diamond] Is the holiday already in HolidayList? - findHoliday()
+                      Yes: Display error message
+                        (what-next)
+                      No: Save holiday to HolidayList using addHoliday()
+                        (what-next)
+            2: Delete a holiday
+              [get-remove-name] Get name of holiday from user
+                Get date of holiday from user
+                  [.diamond] Are both the name and date valid?
+                    No: (get-remove-name)
+                    Yes: [.diamond] Is the holiday in HolidayList? - findHoliday()
+                      Yes: Remove the holiday using removeHoliday()
+                        (what-next)
+                      No: Display error message
+                        (what-next)
+            3: Save holidays to JSON
+              [.diamond] Is the user sure they want to save data?
+                Yes: [get-file] Get the name of the file from the user
+                  [.diamond] Is the the JSON file name valid?
+                    No: (get-file)
+                    Yes: Save JSON file using saveToJSON()
+                      (what-next)
+                No: (what-next)
+            4: View holidays
+              Determine what range of years for holidays exist
+                [year-check] Get what year the user wants to look at
+                  Get what month the user wants to look at
+                    [.diamond] Is the input valid?
+                      No: (year-check)
+                      Yes: [.diamond] Is the year and month include today's date?
+                        Yes: [.diamond] Does the the user want to see the weather as well?
+                          Yes: Pass in variable that makes it so weather shows alongside holidays
+                            (display-holidays)
+                          No: (display-holidays)
+                        No: [display-holidays] Get list of holidays using filterHolidaysByWeek()
+                          Display holidays with displayHolidays()
+                            (what-next)
+            5: Exit the program
+              [.diamond] Has the HolidayList been saved?
+                Yes: [.diamond] [end-choice] Is the user sure they want to quit?
+                  Yes: [.circle] Display farewell message and end program
+                  No: (what-next)
+                No: Display warning
+                  (end-choice)
