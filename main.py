@@ -280,12 +280,21 @@ class HolidayList:
     # displayHolidaysInWeek: display a list of holidays with proper formatting
     #   holiday_list: (list(Holiday)) list of holidays
     #   should_print: (bool, default: False) True to include prints of each; False otherwise
+    #   if_weather: False to not show weather; True otherwise (BE CAREFUL! ONLY WORKS FOR CURRENT WEEK!)
     #   return: (list(str)) list of properly formatted holidays
-    def displayHolidays(self, holiday_list, should_print=False):
+    def displayHolidays(self, holiday_list, should_print=False, if_weather=False):
 
         format_holidays = []
         for holiday in holiday_list:
             format_holidays.append(f'{holiday} ({holiday.date.date()})')
+
+        # Add in weather upon request
+        if (if_weather):
+            print("Add weather stuff here!")
+            weather = self.getWeather(datetime.today().year, datetime.today().isocalendar()[1])
+            if (weather != None and len(weather) == 7):
+                for i in range(len(format_holidays)):
+                    format_holidays[i] = f'{format_holidays[i]} - {weather[i]}'
 
         # Give option to print holidays within function 
         if (should_print):
@@ -323,7 +332,8 @@ class HolidayList:
             print('Ran out of queries to Weather API!')
 
     # viewCurrentWeek: view current week of holidays and weather
-    def viewCurrentWeek(self):
+    #   if_weather: (bool) False to not show weather; True otherwise
+    def viewCurrentWeek(self, weather=False):
 
         # Use the Datetime Module to look up current week and year
         year = datetime.now().year
@@ -333,10 +343,7 @@ class HolidayList:
         holidays = self.filterHolidaysByWeek(year, week)
 
         # Use your displayHolidaysInWeek function to display the holidays in the week
-        self.displayHolidays(holidays, should_print=True)
-
-        # Ask user if they want to get the weather
-        # If yes, use your getWeather function and display results
+        self.displayHolidays(holidays, should_print=True, if_weather=weather)
 
 def main():
 
@@ -469,7 +476,6 @@ def main():
             # Return to main menu
             print('Returning to main menu!\n')
 
-
         # Save holidays option
         if (choice == 3):
             
@@ -549,11 +555,30 @@ def main():
             which_year = int_input(minimum=year_min, maximum=year_max, input_string="Which year?: ")
             which_week = int_input(minimum=1, maximum=52,
                 input_string=f'Which week (current week: {datetime.today().isocalendar()[1]})? [1-52]: ')
+
+            # If the week is the current week and year is current year, then offer to show weather as well
+            weather = False
+            if (which_week == datetime.today().isocalendar()[1] and which_year == datetime.today().year):
+                
+                # Ask if user would like to the weather
+                print("Include weather?")
+
+                # Determine if the user wants to see weather
+                good_input = False
+                while (not good_input):
+                    choice = input('[y/n] ')
+                    if (choice.lower().strip() == 'y'): # Get weather option
+                        weather = True
+                        good_input = True
+                    elif (choice.lower().strip() == 'n'): # Don't get weather option
+                        good_input = True
+                    else: # Bad input
+                        print("Please enter 'y' or 'n'!")
             
             # Display results
             print()
             print(f'These are the holidays for {which_year} week #{which_week}:')
-            holidays.displayHolidays(holidays.filterHolidaysByWeek(which_year, which_week), should_print=True)
+            holidays.displayHolidays(holidays.filterHolidaysByWeek(which_year, which_week), should_print=True, if_weather=weather)
             print()
         
         # Exit option
