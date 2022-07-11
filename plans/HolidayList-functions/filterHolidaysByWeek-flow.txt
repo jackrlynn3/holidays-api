@@ -1,0 +1,3 @@
+[.circle] filterHolidaysByWeek() is called
+  Use lambda and filter functions to get only holidays that have years and weeks that match the input
+    [.circle] Return list of Holidays that belong to that year and week subsection

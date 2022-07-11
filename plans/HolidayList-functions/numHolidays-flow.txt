@@ -1,0 +1,2 @@
+[.circle] numHolidays() is called
+  [.circle] Return length of inner_holidays list

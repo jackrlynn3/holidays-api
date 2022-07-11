@@ -1,0 +1,14 @@
+[.circle] displayHolidays() is called
+  [.diamond] Should the display include weather?
+    Yes: Call getWeather() to get weather
+      (next)
+    No: [next] Iterate through the holiday_list passed in
+      [iteration] Get the next Holiday
+        Convert date into usable format
+          Create properly formated string, altering if weather is included
+            [.diamond] Is this the last iteration?
+              No: (iteration)
+              Yes: [.diamond] Should the function also print the formatted holidays?
+                Yes: Print formatted holidays
+                  (return)
+                No: [.circle] [return] Return list for formatted holiday strings

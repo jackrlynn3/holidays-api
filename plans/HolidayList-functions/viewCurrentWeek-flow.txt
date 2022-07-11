@@ -1,0 +1,5 @@
+[.circle] viewCurrentWeek() is called
+  Get the current year using datetime
+    Get the current week using datetime
+      Get the list of holidays in this timeframe using filterHolidaysByWeek()
+        [.circle] Display the holidays using displayHolidays(), passing in the subsection list
