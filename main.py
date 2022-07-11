@@ -129,7 +129,7 @@ class HolidayList:
 
         # If not holiday instance, throw an exception
         else:
-            raise Exception("Input obejct must be Holiday type!")
+            raise Exception("Input object must be Holiday type!")
 
     # findHoliday: search and return specific holiday in list
     #   holiday_name: (str) name of the holiday
@@ -369,7 +369,57 @@ def main():
         choice = int_input(minimum=1, maximum=5)
         print()
 
-        #if (choice == 1):
+        # Add a holiday option
+        if (choice == 1):
+
+            # Display page info
+            print("Add a Holiday")
+            print("=============")
+
+            # Get holiday name
+            good_input = False
+            name = ""
+            while (not good_input):
+                name = input("Holiday: ")
+                if (name == ""):
+                    print("Please enter a name that isn't blank!")
+                else:
+                    good_input = True
+            
+            # Get date
+            good_input = False
+            date = ""
+            while (not good_input):
+                date = input("Date [YYYY-MM-DD]: ")
+
+                # Immediately reject blank entries
+                if (date == ""):
+                    print("Please enter a name that isn't blank!")
+                
+                # Try to convert date to datetime to see if properly formatted
+                try:
+                    datetime.strptime(date, '%Y-%m-%d')
+                    good_input = True
+                except:
+                    print("Date is not formatted correctly; please use YYYY-MM-DD!")
+
+            # Check to see if holiday already exists
+            exists = holidays.findHoliday(name, date)
+            if (exists == None):
+
+                # Add holiday if not already there
+                holiday = Holiday(name, date)
+                holidays.addHoliday(holiday)
+                print(f'\n{name} ({date}) is now added!\n')
+                saved = False
+
+            # Don't add holiday if already in list
+            else:
+                print(f'\n{name} ({date}) has already been entered into the system!\n')
+
+            # Return to main menu
+            print('Returning to main menu!\n')
+
         #if (choice == 2):
 
         # Save holidays option
@@ -473,6 +523,7 @@ def main():
                     keep_going = False
                     good_input = True
                 elif (choice.lower().strip() == 'n'): # Leave menu
+                    print()
                     print('Returning to main menu!\n')
                     good_input = True
                 else: # Bad input
